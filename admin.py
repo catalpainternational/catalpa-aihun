@@ -1,6 +1,6 @@
 from datetime import datetime
 from django.contrib import admin
-from catalpa.ihun.models import Operation
+from catalpa.aihun.models import Operation
 
 admin.site.register(Operation)
 
