@@ -1,4 +1,4 @@
-# ihun
+# Aihun
 
 This is a set of fundation classes that futur Catalpa International
 projects will (hopefully) be built on.
