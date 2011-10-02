@@ -18,6 +18,20 @@ class Model(models.Model):
     class Meta:
         abstract = True
 
+    @property
+    def is_valid(self,):
+        ops = Operation.objects.filter(object_id=self.uuid).filter(name="voiding")
+        for op in ops:
+            if op.is_voiding():
+                return False
+        return True
+
+    @property
+    def last_modified(self,):
+        op = Operation.objects.filter(object_id=self.uuid).filter(name__in=['creation','modification']).order_by("-date")[0]
+        return op.date
+
+
 class ModelType(Model):
     name = models.CharField(_('name'), db_index=True, max_length=100)
     description = models.CharField(_('description'), max_length=765, blank=True)
@@ -30,19 +44,49 @@ class ModelType(Model):
 
 class Operation(models.Model):
     """
-    Typically: creation, deletion or modification of a model.
+    Typically: creation, modification or voiding of a model.
     The affected relation model is know through the generic foreign key
     """
     uuid = models.CharField(primary_key=True, unique=True, db_index=True, max_length=36, default=make_uuid, editable=False,)
     operator = models.ForeignKey(User, related_name="%(class)s_operations", verbose_name=_('Operator'), null=True, blank=False,)
     date = models.DateTimeField(_('operation date'), auto_now_add=True)
-    name = models.IntegerField(_('operation'), null=True, blank=True) #e.g.: modification, creation, voiding
+    name = models.CharField(_('operation'),max_length=15, null=False, blank=False) #e.g.: modification, creation, voiding
     description = models.CharField(_('operation description'),max_length=765,blank=True) #e.g: Voided because it was a Cylon
     ####################
     ## Aaaaarg. This is where the mismatch between the DB and Object paradigms collide
     content_type = models.ForeignKey(ContentType)
-    object_id = models.CharField(max_length=36)
+    object_id = models.CharField(max_length=36,db_index=True)
     content_object = generic.GenericForeignKey('content_type', 'object_id')
     #instead of subject = models.ForeignKey(Model)
+
+    def setup(self,operator,operation,operated,reason):
+        self.operator = operator
+        self.name = operation
+        self.description = reason
+        self.object_id = operated.uuid
+        self.content_type = ContentType.objects.get_for_model(operated.__class__)
+
+    def create(self,operator,operated,reason):
+        self.setup(operator,'creation',operated,reason)
+
+    def modify(self,operator,operated,reason):
+        self.setup(operator,'modification',operated,reason)
+
+    def void(self,operator,operated,reason):
+        self.setup(operator,'voiding',operated,reason)
+
+
+    """
+    Supported operations: voiding, creation, modification
+    """
+    def is_voiding(self):
+        return self.name == 'voiding'
+
+    def is_creation(self):
+        return self.name == 'creation'
+
+    def is_modification(self):
+        return self.name == 'modification'
+
     class Meta:
         abstract = False
