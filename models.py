@@ -66,14 +66,14 @@ class Operation(models.Model):
         self.object_id = operated.uuid
         self.content_type = ContentType.objects.get_for_model(operated.__class__)
 
-    def create(self,operator,operated,reason):
-        self.setup(operator,'creation',operated,reason)
+    def create(self,who,what,why):
+        self.setup(who,'creation',what,why)
 
-    def modify(self,operator,operated,reason):
-        self.setup(operator,'modification',operated,reason)
+    def modify(self,who,what,why):
+        self.setup(who,'modification',what,why)
 
-    def void(self,operator,operated,reason):
-        self.setup(operator,'voiding',operated,reason)
+    def void(self,who,what,why):
+        self.setup(who,'voiding',what,why)
 
 
     """
