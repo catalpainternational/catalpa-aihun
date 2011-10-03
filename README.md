@@ -1,6 +1,6 @@
 # Aihun
 
-This is a set of fundation classes that futur Catalpa International
+This is a set of fundation classes that future Catalpa International
 projects will (hopefully) be built on.
 
 Thanks to the magic of `djang.contrib.contenttype` and
