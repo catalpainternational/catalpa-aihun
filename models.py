@@ -11,10 +11,10 @@ import uuid
 def make_uuid():
     return str(uuid.uuid4())
 
-    
+
 class Model(models.Model):
     uuid = models.CharField(primary_key=True, unique=True, db_index=True, max_length=36, default=make_uuid, editable=False,)
-    
+
     class Meta:
         abstract = True
 
@@ -28,14 +28,19 @@ class Model(models.Model):
 
     @property
     def last_modified(self,):
-        op = Operation.objects.filter(object_id=self.uuid).filter(name__in=['creation','modification']).order_by("-date")[0]
+        op = Operation.objects.filter(object_id=self.uuid).filter(name__in=['creation','modification','importation']).order_by("-date")[0]
         return op.date
+
+    @property
+    def last_modification(self,):
+        op = Operation.objects.filter(object_id=self.uuid).filter(name__in=['creation','modification','importation']).order_by("-date")[0]
+        return op
 
 
 class ModelType(Model):
     name = models.CharField(_('name'), db_index=True, max_length=100)
     description = models.CharField(_('description'), max_length=765, blank=True)
- 
+
     def __unicode__(self):
         return u"%s" % self.name
 
@@ -75,6 +80,9 @@ class Operation(models.Model):
     def void(self,who,what,why):
         self.setup(who,'voiding',what,why)
 
+    def import_op(self,who,what,why):
+        self.setup(who,'importation',what,why)
+
 
     """
     Supported operations: voiding, creation, modification
@@ -87,6 +95,9 @@ class Operation(models.Model):
 
     def is_modification(self):
         return self.name == 'modification'
+
+    def is_import(self):
+        return self.name == 'importation'
 
     class Meta:
         abstract = False
