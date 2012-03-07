@@ -1,6 +1,6 @@
 from datetime import datetime
 from django.contrib import admin
-from catalpa.aihun.models import Operation
+from aihun.models import Operation
 
 
 class OperationAdmin(admin.ModelAdmin):
