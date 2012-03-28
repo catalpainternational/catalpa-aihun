@@ -36,6 +36,11 @@ class Model(models.Model):
         op = Operation.objects.filter(object_id=self.uuid).filter(name__in=['creation','modification','importation']).order_by("-date")[0]
         return op
 
+    @property
+    def creation_date(self,):
+        op = Operation.objects.filter(object_id=self.uuid).filter(name='creation').order_by("-date")[0]
+        return op.date
+
 
 class ModelType(Model):
     name = models.CharField(_('name'), db_index=True, max_length=100)
