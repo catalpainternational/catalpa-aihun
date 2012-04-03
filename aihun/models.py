@@ -106,3 +106,6 @@ class Operation(models.Model):
 
     class Meta:
         abstract = False
+
+def creation_operations(model):
+    return Operation.objects.filter(content_type=ContentType.objects.get_for_model(model)).filter(name='creation')
