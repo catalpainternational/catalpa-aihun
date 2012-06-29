@@ -6,7 +6,7 @@ setup(
     license="",
 
     install_requires = [
-"rapidsms",
+"",
 
 ],
 
