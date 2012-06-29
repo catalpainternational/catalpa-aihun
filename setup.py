@@ -15,7 +15,7 @@ setup(
     author='Anders Hofstee, Nicoas Hoibian',
     author_email='a.hofstee@catalpainternational.org',
 
-    url='https://github.com/catalpainternational/aihun',
+    url='https://github.com/catalpainternational/catalpa-aihun',
     include_package_data=True,
 
     packages=['aihun'],
